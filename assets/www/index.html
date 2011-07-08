@@ -1,0 +1,62 @@
+<!DOCTYPE html> 
+<head> 
+	<script>
+	function func1() { var value1=0; };
+	var func4 = new function() { var value4=0; };
+
+	var countNum = 0;
+	setInterval(function() {
+			document.getElementById('timerTest').innerHTML += ++countNum + "<br/>";
+		}, 1000);
+	function changeText() {
+	
+		//document.getElementById('myDiv').innerHTML = MyHybrid.hello();
+		var str = "";
+		//str += MyHybrid.setInt(20) + "<br/>";
+		//str += MyHybrid.setFloat(20.5) + "<br/>";
+		//str += MyHybrid.setFloat(JSON.stringify(20.5)) + "<br/>";
+		//str += MyHybrid.setFloat(""+20.5) + "<br/>";
+		//str += MyHybrid.setBoolean(true) + "<br/>";
+		//str += MyHybrid.setString("hello") + "<br/>";
+		//str += MyHybrid.setObject({}) + "<br/>";
+		//str += MyHybrid.setArray([]) + "<br/>";
+		//str += MyHybrid.setFunction(func1) + "<br/>";
+		//str += MyHybrid.setFunction(function func2() { var value2=0; }) + "<br/>";
+		//str += MyHybrid.setFunction(new function() { var value3=0; }) + "<br/>";
+		//str += MyHybrid.setFunction(func4) + "<br/>";
+		
+		//str += MyHybrid.setObject(JSON.stringify({})) + "<br/>";
+		//str += MyHybrid.setArray(JSON.stringify([])) + "<br/>";
+		//str += MyHybrid.setFunction(func1.toString()) + "<br/>";
+		//str += MyHybrid.setFunction((function func2() { var value2=0; }).toString()) + "<br/>";
+		//str += MyHybrid.setFunction((new function() { var value3=0; }).toString()) + "<br/>";
+		//str += MyHybrid.setFunction(JSON.stringify( (new function() { var value3=0; }).toString() )) + "<br/>";
+		//str += MyHybrid.setFunction(func4.toString()) + "<br/>";
+		//document.getElementById('paramTest').innerHTML = str;
+		
+		//MyHybrid.hang(5);
+		//document.getElementById('timerTest').innerHTML += "hang 5secs<br/>";
+		
+		document.getElementById('timerTest').innerHTML += "asyncJob start<br/>";
+		MyHybrid.asyncJob(5);
+		document.getElementById('timerTest').innerHTML += "asyncJob 5secs<br/>";
+		
+		//setTimeout(function() {
+		//	document.getElementById('paramTest').innerHTML = "hang 10secs<br/>";
+		//	MyHybrid.hang(10);
+		//}, 0);
+	}
+	
+	var callbacks = {};
+	function setFunction(func) {
+		callbacks = func;
+	}
+	</script> 
+</head> 
+<body>
+	<!--<b id='myDiv'>Hello world.</b><br/>-->
+	<div id='paramTest'></div>
+	<div id='timerTest'></div>
+	<input type='button' onclick='changeText()' value='Change Text'/>
+</body> 
+</html> 

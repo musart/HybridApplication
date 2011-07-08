@@ -1,0 +1,62 @@
+<!DOCTYPE html> 
+<head> 
+	<script>
+	function func1() { var value1=0; };
+	var func4 = new function() { var value4=0; };
+
+	var countNum = 0;
+	function changeText() {
+		var canvas = document.getElementById("canvas1");
+		var context = canvas.getContext("2d");
+		
+		canvas.ontouchmove = moveEventFunction;
+	}
+	
+	function moveEventFunction(e) {
+	    if (e.touches) {
+	        // Touch Enabled (loop through all touches)
+	        for (var i = 1; i <= e.touches.length; i++) {
+	            var p = getCoords(e.touches[i - 1]); // Get info for finger i
+	            // ... Do something with point touch p
+	        }
+	    }
+	    else {
+	        // Not touch enabled (get cursor position from single event)
+	        var p = getCoords(e);
+	        // ... Do something with cursor point p
+	    }
+	
+	    return false; // Stop event bubbling up and doing other stuff (like pinch zoom or scroll)
+	}
+	
+	function getCoords(e){
+		if (e.offsetX) {
+			// Works in Chrome / Safari (except on iPad/iPhone)
+			return {
+				x: e.offsetX,
+				y: e.offsetY
+			};
+		}
+		else 
+			if (e.layerX) {
+				// Works in Firefox
+				return {
+					x: e.layerX,
+					y: e.layerY
+				};
+			}
+			else {
+				// Works in Safari on iPad/iPhone
+				return {
+					x: e.pageX - cb_canvas.offsetLeft,
+					y: e.pageY - cb_canvas.offsetTop
+				};
+			}
+	}
+	</script> 
+</head> 
+<body>
+	<canvas id="canvas1" width=300 height=300></canvas>
+	<input type='button' onclick='changeText()' value='Change Text'/>
+</body> 
+</html> 
