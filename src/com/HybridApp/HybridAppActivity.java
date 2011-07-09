@@ -2,7 +2,9 @@ package com.HybridApp;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 import com.HybridApp.R;
@@ -20,9 +22,16 @@ public class HybridAppActivity extends Activity {
 		mWebView.setLayoutParams(new LinearLayout.LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		setContentView(mWebView);
-		mWebView.loadUrl("file:///android_asset/www/index.html");
+		mWebView.loadUrl("file:///android_asset/www/index2.html");
 		mWebView.getSettings().setJavaScriptEnabled(true);
 		mWebView.addJavascriptInterface(new MyHybrid(), "MyHybrid");
+		mWebView.setWebChromeClient(new WebChromeClient() {
+			@Override
+			public void onConsoleMessage(String message, int lineNumber,
+					String sourceID) {
+				super.onConsoleMessage(message, lineNumber, sourceID);
+			}
+		});
     }
     
     class MyHybrid {
@@ -66,24 +75,97 @@ public class HybridAppActivity extends Activity {
     		try {
 				Thread.sleep(time*1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
-    	
+
     	public void asyncJob(final int time) {
     		Thread thread = new Thread(new Runnable() {
     			@Override
     			public void run() {
     				try {
     					Thread.sleep(time*1000);
+    					mWebView.loadUrl("javascript:document.getElementById('tTest').innerHTML += \"finish asyncJob()<br/>\"");
     				} catch (InterruptedException e) {
     					e.printStackTrace();
     				}
     			}
     		});
-
-    		thread.run();
+    		thread.start();
+    	}
+    	
+    	public void aFuncJob(final String strFunc, final int time) {
+    		Log.e("", strFunc);
+    		Thread thread = new Thread(new Runnable() {
+    			@Override
+    			public void run() {
+    				try {
+    					Thread.sleep(time*1000);
+    					mWebView.loadUrl("javascript:" + strFunc + "(\"finish aFuncJob()<br/>\")");
+    				} catch (InterruptedException e) {
+    					e.printStackTrace();
+    				}
+    			}
+    		});
+    		thread.start();
+    	}
+    	
+    	public void aFuncJobWithId(final String strId, final int time) {
+    		Log.e("", strId);
+    		Thread thread = new Thread(new Runnable() {
+    			@Override
+    			public void run() {
+    				try {
+    					Thread.sleep(time*1000);
+    					mWebView.loadUrl("javascript:CbMgr.fireCbFunc(\"" + strId + "\", \"finish aFuncJobWithId()<br/>\")");
+    				} catch (InterruptedException e) {
+    					e.printStackTrace();
+    				}
+    			}
+    		});
+    		thread.start();
+    	}
+    	
+    	/*
+    	 * dot
+    	 */
+    	public int dotNum = 0;
+    	
+    	public void addDot(final String cbId, final String arg) {
+    		dotNum++;
+    	}
+    	
+    	public void startDot(final String cbId, final String arg) {
+    		dotNum = 0;
+    		
+    		final Thread thread = new Thread(new Runnable() {
+    			@Override
+    			public void run() {
+    				while(true) {
+    					if(dotNum == 10) {
+    						Log.e("aa", "detect");
+    						mWebView.loadUrl("javascript:CbMgr.fireCbFunc(\"" + cbId + "\", \"finish1\")");
+    						break;
+    					} else {
+    						try {
+    	    					Thread.sleep(500);
+    	    				} catch (InterruptedException e) {
+    	    					e.printStackTrace();
+    	    				}
+    					}
+    				}
+    			}
+    		});
+    		thread.start();
+    	}
+    	
+    	public void HybridFunc(final String strFunc, final String cbId, final String arg) {
+    		Log.e("aa", "HybridFunc");
+    		if("addDot".equals(strFunc)) {
+    			addDot(cbId, arg);
+    		} else if("startDot".equals(strFunc)) {
+    			startDot(cbId, arg);
+    		}
     	}
     }
 }

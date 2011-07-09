@@ -1,62 +1,61 @@
 <!DOCTYPE html> 
 <head> 
 	<script>
-	function func1() { var value1=0; };
-	var func4 = new function() { var value4=0; };
-
-	var countNum = 0;
-	function changeText() {
-		var canvas = document.getElementById("canvas1");
-		var context = canvas.getContext("2d");
-		
-		canvas.ontouchmove = moveEventFunction;
+	function HybridFunc(action, cb, arg) {
+		CbMgr.callCbFunc(action, cb, arg);
 	}
 	
-	function moveEventFunction(e) {
-	    if (e.touches) {
-	        // Touch Enabled (loop through all touches)
-	        for (var i = 1; i <= e.touches.length; i++) {
-	            var p = getCoords(e.touches[i - 1]); // Get info for finger i
-	            // ... Do something with point touch p
-	        }
-	    }
-	    else {
-	        // Not touch enabled (get cursor position from single event)
-	        var p = getCoords(e);
-	        // ... Do something with cursor point p
-	    }
-	
-	    return false; // Stop event bubbling up and doing other stuff (like pinch zoom or scroll)
-	}
-	
-	function getCoords(e){
-		if (e.offsetX) {
-			// Works in Chrome / Safari (except on iPad/iPhone)
-			return {
-				x: e.offsetX,
-				y: e.offsetY
-			};
+	var CbMgr = {};
+	CbMgr.cbId = 0;
+	CbMgr.cbs = {};
+	CbMgr.callCbFunc = function(action, cb, arg) {
+		var id = "CbMgr" + CbMgr.cbId++;
+		if(!CbMgr.cbs[id]) {
+			CbMgr.cbs[id] = cb;
+			MyHybrid.HybridFunc(action, id, arg);
 		}
-		else 
-			if (e.layerX) {
-				// Works in Firefox
-				return {
-					x: e.layerX,
-					y: e.layerY
-				};
-			}
-			else {
-				// Works in Safari on iPad/iPhone
-				return {
-					x: e.pageX - cb_canvas.offsetLeft,
-					y: e.pageY - cb_canvas.offsetTop
-				};
-			}
+	};
+	CbMgr.fireCbFunc = function(id, args) {
+		if(CbMgr.cbs[id]) {
+			CbMgr.cbs[id](args);
+			delete CbMgr.cbs[id];
+		}
+	}
+	</script>
+	
+	<script>	
+	function startDotGame() {
+		var canvas = document.getElementById("canvas1");
+		ctx = canvas.getContext("2d");
+
+		canvas.addEventListener("touchstart", function(event) {
+			ctx.beginPath();
+			ctx.lineWidth = 10;
+			ctx.moveTo(event.touches[0].pageX, event.touches[0].pageY);
+			ctx.lineTo(event.touches[0].pageX+1, event.touches[0].pageY+1);
+			ctx.stroke();
+		});
+		canvas.addEventListener("touchmove", function(event) {});
+		canvas.addEventListener("touchend", function(event) {
+			ctx.stroke();
+			ctx.closePath();
+			ctx.save();
+			HybridFunc("addDot", function() {});
+		});
+		
+		HybridFunc("startDot", function(value) {
+			ctx.beginPath();
+			ctx.fillText(value, 50, 50);
+			ctx.stroke();
+			ctx.closePath();
+			ctx.save();
+		});
+		document.getElementById('btn').value = "stop";
 	}
 	</script> 
 </head> 
 <body>
-	<canvas id="canvas1" width=300 height=300></canvas>
-	<input type='button' onclick='changeText()' value='Change Text'/>
+	<canvas id="canvas1" width=300 height=300 style="position: relative; border: 1px solid #000;"></canvas>
+	<input id="btn" type='button' onclick='startDotGame()' value='start'/>
 </body> 
 </html> 

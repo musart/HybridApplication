@@ -2,12 +2,21 @@
 <head> 
 	<script>
 	function func1() { var value1=0; };
-	var func4 = new function() { var value4=0; };
+	var func5 = new function() { var value5=0; };
+	
+	function displayPropertyNames(obj){
+		var names = "";
+		for(var name in obj){
+			names += name + "\n";
+		}
+		document.getElementById('tTest').innerHTML += "properties:" + names;
+	}
 
-	var countNum = 0;
-	setInterval(function() {
-			document.getElementById('timerTest').innerHTML += ++countNum + "<br/>";
-		}, 1000);
+	//var start = new Date().getTime();
+	//setInterval(function() {
+	//	document.getElementById('tTest').innerHTML += (new Date().getTime() - start) + "msec<br/>";
+	//}, 1000);
+		
 	function changeText() {
 	
 		//document.getElementById('myDiv').innerHTML = MyHybrid.hello();
@@ -29,17 +38,42 @@
 		//str += MyHybrid.setArray(JSON.stringify([])) + "<br/>";
 		//str += MyHybrid.setFunction(func1.toString()) + "<br/>";
 		//str += MyHybrid.setFunction((function func2() { var value2=0; }).toString()) + "<br/>";
-		//str += MyHybrid.setFunction((new function() { var value3=0; }).toString()) + "<br/>";
-		//str += MyHybrid.setFunction(JSON.stringify( (new function() { var value3=0; }).toString() )) + "<br/>";
-		//str += MyHybrid.setFunction(func4.toString()) + "<br/>";
+		//str += MyHybrid.setFunction((function() { var value3=0; }).toString()) + "<br/>";
+		//str += MyHybrid.setFunction((new function() { var value4=0; }).toString()) + "<br/>";
+		//str += MyHybrid.setFunction(func5) + "<br/>";
 		//document.getElementById('paramTest').innerHTML = str;
 		
+		//document.getElementById('tTest').innerHTML += "call MyHybrid.hang()<br/>";
 		//MyHybrid.hang(5);
-		//document.getElementById('timerTest').innerHTML += "hang 5secs<br/>";
+		//document.getElementById('tTest').innerHTML += "hang 5secs<br/>";
 		
-		document.getElementById('timerTest').innerHTML += "asyncJob start<br/>";
-		MyHybrid.asyncJob(5);
-		document.getElementById('timerTest').innerHTML += "asyncJob 5secs<br/>";
+		//document.getElementById('tTest').innerHTML += "call MyHybrid.asyncJob()<br/>";
+		//MyHybrid.asyncJob(5);
+		//document.getElementById('tTest').innerHTML += "asyncJob 5secs<br/>";
+		
+		//document.getElementById('tTest').innerHTML += "call MyHybrid.aFuncJob()<br/>";
+		//MyHybrid.aFuncJob(asyncFunction.toString().match(/^\s*function\s+([^\s\(]+)/)[1], 5);
+		//document.getElementById('tTest').innerHTML += "aFuncJob 5secs<br/>";
+		
+		document.getElementById('tTest').innerHTML += "call HybridFunc()<br/>";
+		HybridFunc(function(str) {
+			document.getElementById('tTest').innerHTML += "callbackFunc3:" + str + "<br/>"; 
+		}, 5);
+		//document.getElementById('tTest').innerHTML += "MyFunction 5secs<br/>";
+		
+		//document.getElementById('tTest').innerHTML += "call MyFunction(callbackFunc1, 1)<br/>";
+		//MyFunction(callbackFunc1, 1);
+		
+		//document.getElementById('tTest').innerHTML += "call MyFunction(callbackFunc2, 1)<br/>";
+		//MyFunction(function callbackFunc2(str) { document.getElementById('tTest').innerHTML += "callbackFunc2:" + str + "<br/>"; }, 1);
+		
+		//document.getElementById('tTest').innerHTML += "call MyFunction(callbackFunc3, 1)<br/>";
+		//MyFunction(function(str) { document.getElementById('tTest').innerHTML += "callbackFunc3:" + str + "<br/>"; }, 1);
+		
+		//document.getElementById('tTest').innerHTML += "call MyFunction(callbackFunc4, 1)<br/>";
+		//MyFunction(new function(str) { document.getElementById('tTest').innerHTML += "callbackFunc4:" + str + "<br/>"; }, 1);
+		//document.getElementById('tTest').innerHTML += "MyFunction 5secs<br/>";
+		
 		
 		//setTimeout(function() {
 		//	document.getElementById('paramTest').innerHTML = "hang 10secs<br/>";
@@ -47,16 +81,40 @@
 		//}, 0);
 	}
 	
-	var callbacks = {};
-	function setFunction(func) {
-		callbacks = func;
+	function callbackFunc(str) {
+		document.getElementById('tTest').innerHTML += "callbackFunc:" + str + "<br/>";
+	}
+	
+	function callbackFunc1(str) {
+		document.getElementById('tTest').innerHTML += "callbackFunc1:" + str + "<br/>";
+	}
+	
+	function HybridFunc(cb, arg) {
+		CbMgr.callCbFunc(cb, arg);
+	}
+	
+	var CbMgr = {};
+	CbMgr.cbId = 0;
+	CbMgr.cbs = {};
+	CbMgr.callCbFunc = function(func, arg) {
+		var id = "CbMgr" + CbMgr.cbId++;
+		if(!CbMgr.cbs[id]) {
+			CbMgr.cbs[id] = func;
+			MyHybrid.aFuncJobWithId(id, arg);
+		}
+	};
+	CbMgr.fireCbFunc = function(id, args) {
+		if(CbMgr.cbs[id]) {
+			CbMgr.cbs[id](args);
+			delete CbMgr.cbs[id];
+		}
 	}
 	</script> 
 </head> 
 <body>
 	<!--<b id='myDiv'>Hello world.</b><br/>-->
 	<div id='paramTest'></div>
-	<div id='timerTest'></div>
+	<div id='tTest'></div>
 	<input type='button' onclick='changeText()' value='Change Text'/>
 </body> 
 </html> 
