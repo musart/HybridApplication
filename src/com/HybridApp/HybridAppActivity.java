@@ -12,6 +12,7 @@ import com.HybridApp.R;
 public class HybridAppActivity extends Activity {
     /** Called when the activity is first created. */
     // I add this line
+    // I add this line in 'new-branch'
 	private WebView mWebView = null;
 
     @Override
