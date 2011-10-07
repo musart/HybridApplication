@@ -14,6 +14,7 @@ public class HybridAppActivity extends Activity {
     // I add this line
     // I add this line in 'klimt_branch' by klimt1004
     // I add this line in 'klimt_branch' by klimt1004 again
+    // I add this line in 'new-branch'
 	private WebView mWebView = null;
 
     @Override
